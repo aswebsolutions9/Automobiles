@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AS Automobiles | Drive Luxury. Experience Performance.</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --carbon-black: #0a0a0a;
+            --metallic-silver: #e0e0e0;
+            --racing-red: #ff0000;
+            --graphite: #1c1c1c;
+            --headlight-glow: rgba(255, 255, 255, 0.15);
+            --brake-glow: rgba(255, 0, 0, 0.3);
+            --glass: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --transition: all 0.4s cubic-bezier(0.2, 1, 0.3, 1);
+            --bg: var(--carbon-black);
+            --text: #ffffff;
+        }
+
+        [data-theme="light"] {
+            --bg: #f5f5f5;
+            --text: #0a0a0a;
+            --glass: rgba(0, 0, 0, 0.05);
+            --glass-border: rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            cursor: none;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        h1, h2, h3, .nitro { font-family: 'Orbitron', sans-serif; text-transform: uppercase; }
+
+        /* --- CUSTOM CURSOR --- */
+        #cursor {
+            width: 8px; height: 8px; background: var(--racing-red);
+            border-radius: 50%; position: fixed; pointer-events: none; z-index: 10000;
+        }
+        #cursor-glow {
+            width: 40px; height: 40px; border: 1px solid var(--racing-red);
+            border-radius: 50%; position: fixed; pointer-events: none; z-index: 9999;
+            transition: transform 0.15s ease-out;
+        }
+
+        /* --- SECTION 1: IGNITION LOADER --- */
+        #loader {
+            position: fixed; inset: 0; background: #000; z-index: 11000;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+        }
+        .speedo-container {
+            width: 200px; height: 100px; border: 4px solid #333;
+            border-radius: 100px 100px 0 0; position: relative; overflow: hidden;
+        }
+        .needle {
+            position: absolute; bottom: 0; left: 50%; width: 80px; height: 4px;
+            background: var(--racing-red); transform-origin: left center;
+            transform: rotate(-180deg); animation: rev 2.5s infinite;
+        }
+        @keyframes rev {
+            0% { transform: rotate(-180deg); }
+            50% { transform: rotate(0deg); }
+            60% { transform: rotate(-20deg); }
+            100% { transform: rotate(-180deg); }
+        }
+        .loader-text { margin-top: 20px; letter-spacing: 5px; color: var(--racing-red); font-weight: 800; font-size: 0.8rem; }
+
+        /* --- SECTION 2: NAVBAR --- */
+        nav {
+            position: fixed; top: 0; width: 100%; padding: 25px 8%;
+            display: flex; justify-content: space-between; align-items: center;
+            z-index: 1000; transition: var(--transition);
+        }
+        nav.scrolled {
+            padding: 15px 8%; background: var(--glass); backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--glass-border);
+        }
+        .logo { font-size: 1.5rem; font-weight: 900; letter-spacing: -1px; }
+        .nav-links { display: flex; gap: 30px; list-style: none; }
+        .nav-links a { 
+            text-decoration: none; color: var(--text); font-weight: 600; font-size: 0.8rem;
+            text-transform: uppercase; letter-spacing: 1px; transition: 0.3s;
+        }
+        .nav-links a:hover { color: var(--racing-red); }
+
+        /* --- SECTION 3: HERO --- */
+        .hero {
+            height: 100vh; display: flex; align-items: center; padding: 0 8%;
+            background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.4)), url('https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&q=80&w=2000');
+            background-size: cover; background-position: center; position: relative;
+        }
+        .hero-content { max-width: 850px; z-index: 10; }
+        .hero-badge {
+            display: inline-block; padding: 6px 12px; background: rgba(255,0,0,0.1);
+            border-left: 3px solid var(--racing-red); font-size: 0.7rem; margin-bottom: 20px;
+        }
+        .hero h1 { font-size: 5rem; line-height: 1; margin-bottom: 25px; }
+        .hero p { font-size: 1.1rem; max-width: 600px; margin-bottom: 40px; opacity: 0.8; }
+        
+        .btn {
+            padding: 18px 35px; border: none; font-weight: 800; border-radius: 4px;
+            text-transform: uppercase; letter-spacing: 2px; transition: var(--transition);
+            text-decoration: none; display: inline-block; font-size: 0.8rem;
+        }
+        .btn-red { background: var(--racing-red); color: white; box-shadow: 0 10px 30px var(--brake-glow); }
+        .btn-red:hover { transform: translateY(-5px) scale(1.05); }
+        .btn-outline { border: 1px solid white; color: white; margin-left: 15px; }
+
+        .search-bar {
+            position: absolute; bottom: 50px; left: 8%; right: 8%;
+            background: var(--glass); backdrop-filter: blur(30px);
+            border: 1px solid var(--glass-border); padding: 30px;
+            display: grid; grid-template-columns: repeat(5, 1fr); gap: 20px;
+            border-radius: 8px;
+        }
+        .search-group label { display: block; font-size: 0.6rem; color: var(--racing-red); margin-bottom: 8px; font-weight: 800; }
+        .search-group select { 
+            width: 100%; background: transparent; border: none; border-bottom: 1px solid #444;
+            color: var(--text); padding: 8px 0; font-family: inherit;
+        }
+
+        /* --- SECTION 5: LISTINGS --- */
+        section { padding: 120px 8%; }
+        .sec-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 60px; }
+        .listing-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; }
+        .car-card {
+            background: var(--glass); border: 1px solid var(--glass-border);
+            border-radius: 12px; overflow: hidden; transition: var(--transition);
+        }
+        .car-img-box { height: 220px; overflow: hidden; position: relative; }
+        .car-img-box img { width: 100%; height: 100%; object-fit: cover; transition: 0.8s; }
+        .car-card:hover { transform: translateY(-10px); border-color: var(--racing-red); }
+        .car-card:hover img { transform: scale(1.1); }
+        .car-info { padding: 25px; }
+        .car-price { color: var(--racing-red); font-size: 1.2rem; font-weight: 800; margin-bottom: 10px; }
+        .car-specs { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 0.75rem; opacity: 0.6; margin: 15px 0; }
+
+        /* --- EMI CALCULATOR --- */
+        .finance-container {
+            background: linear-gradient(135deg, #111, #000);
+            border-radius: 20px; padding: 60px; display: grid; grid-template-columns: 1fr 1fr; gap: 60px;
+            border: 1px solid var(--glass-border);
+        }
+        .range-slider { width: 100%; margin: 20px 0; accent-color: var(--racing-red); }
+        .emi-display { 
+            background: var(--glass); border: 1px solid var(--racing-red); 
+            border-radius: 15px; padding: 40px; text-align: center;
+        }
+
+        /* --- UTILS --- */
+        .reveal { opacity: 0; transform: translateY(50px); transition: 1s cubic-bezier(0.2, 1, 0.3, 1); }
+        .reveal.active { opacity: 1; transform: translateY(0); }
+
+        /* --- WHATSAPP --- */
+        .wa-btn {
+            position: fixed; bottom: 30px; right: 30px; width: 60px; height: 60px;
+            background: #25D366; border-radius: 50%; display: flex; align-items: center;
+            justify-content: center; z-index: 1000; box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+        }
+
+        /* --- FOOTER --- */
+        footer { background: #050505; padding: 80px 8% 40px; border-top: 1px solid var(--glass-border); }
+        .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 40px; }
+        .footer-links li { list-style: none; margin-bottom: 12px; font-size: 0.9rem; opacity: 0.6; transition: 0.3s; }
+        .footer-links li:hover { opacity: 1; color: var(--racing-red); padding-left: 5px; }
+
+        @media (max-width: 1024px) {
+            .hero h1 { font-size: 3rem; }
+            .search-bar { grid-template-columns: 1fr 1fr; position: static; margin-top: 30px; }
+            .finance-container { grid-template-columns: 1fr; }
+            .footer-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- CUSTOM CURSOR -->
+    <div id="cursor"></div>
+    <div id="cursor-glow"></div>
+
+    <!-- LOADER -->
+    <div id="loader">
+        <div class="speedo-container">
+            <div class="needle"></div>
+        </div>
+        <p class="loader-text nitro">Starting The Engine...</p>
+    </div>
+
+    <!-- NAVBAR -->
+    <nav id="navbar">
+        <div class="logo nitro">AS <span style="color:var(--racing-red)">AUTO</span></div>
+        <ul class="nav-links">
+            <li><a href="#home">Home</a></li>
+            <li><a href="#inventory">Vehicles</a></li>
+            <li><a href="#finance">Finance</a></li>
+            <li><a href="#gallery">Gallery</a></li>
+            <li><a href="#contact">Contact</a></li>
+        </ul>
+        <div style="display: flex; align-items: center; gap: 15px;">
+            <button onclick="toggleTheme()" style="background:none; border:none; color:inherit; font-size:1.2rem; cursor:pointer">🌓</button>
+            <a href="#" class="btn-red" style="padding: 10px 20px; font-size: 0.7rem; text-decoration:none">Test Drive</a>
+        </div>
+    </nav>
+
+    <!-- HERO -->
+    <section class="hero" id="home">
+        <div class="hero-content">
+            <span class="hero-badge nitro">Elite Automotive Collection</span>
+            <h1 class="reveal">Engineered for the <span style="color:var(--racing-red)">Bold</span></h1>
+            <p class="reveal">Experience the pinnacle of automotive engineering. From high-performance supercars to luxurious executive sedans.</p>
+            <div class="reveal">
+                <a href="#inventory" class="btn btn-red">Explore Inventory</a>
+                <a href="#contact" class="btn btn-outline">Book Consultation</a>
+            </div>
+        </div>
+
+        <div class="search-bar reveal">
+            <div class="search-group">
+                <label>BRAND</label>
+                <select><option>Select Brand</option><option>Porsche</option><option>BMW</option></select>
+            </div>
+            <div class="search-group">
+                <label>MODEL</label>
+                <select><option>Select Model</option></select>
+            </div>
+            <div class="search-group">
+                <label>BUDGET</label>
+                <select><option>₹50L - ₹1Cr</option><option>₹1Cr+</option></select>
+            </div>
+            <div class="search-group">
+                <label>TYPE</label>
+                <select><option>Sports</option><option>Luxury SUV</option></select>
+            </div>
+            <button class="btn btn-red" style="padding: 0">Search</button>
+        </div>
+    </section>
+
+    <!-- FEATURED VEHICLES -->
+    <section id="inventory">
+        <div class="sec-header reveal">
+            <div>
+                <h2 style="font-size: 2.5rem;">New <span style="color:var(--racing-red)">Arrivals</span></h2>
+                <p style="opacity:0.6">The latest additions to our premium showroom.</p>
+            </div>
+            <a href="#" style="color:var(--racing-red); text-decoration:none; font-weight:800">VIEW ALL →</a>
+        </div>
+
+        <div class="listing-grid">
+            <!-- Car 1 -->
+            <div class="car-card reveal">
+                <div class="car-img-box">
+                    <img src="https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&q=80&w=600" alt="Porsche">
+                </div>
+                <div class="car-info">
+                    <p style="font-size:0.7rem; color:var(--racing-red); font-weight:800">PORSCHE</p>
+                    <h3 class="nitro">911 Carrera S</h3>
+                    <div class="car-specs">
+                        <span>Manual | Petrol</span>
+                        <span>0-100: 3.4s</span>
+                    </div>
+                    <div class="car-price">₹1.84 Cr</div>
+                    <div style="display:flex; gap:10px;">
+                        <button class="btn-red" style="width:100%; padding:12px; border-radius:4px; border:none; cursor:pointer">Details</button>
+                        <button style="width:50px; background:var(--glass); border:1px solid var(--glass-border); color:white; cursor:pointer">📞</button>
+                    </div>
+                </div>
+            </div>
+            <!-- Car 2 -->
+            <div class="car-card reveal" style="transition-delay: 0.1s;">
+                <div class="car-img-box">
+                    <img src="https://images.unsplash.com/photo-1555215695-3004980ad54e?auto=format&fit=crop&q=80&w=600" alt="BMW">
+                </div>
+                <div class="car-info">
+                    <p style="font-size:0.7rem; color:var(--racing-red); font-weight:800">BMW</p>
+                    <h3 class="nitro">M5 Competition</h3>
+                    <div class="car-specs">
+                        <span>Auto | Petrol</span>
+                        <span>625 HP</span>
+                    </div>
+                    <div class="car-price">₹1.62 Cr</div>
+                    <div style="display:flex; gap:10px;">
+                        <button class="btn-red" style="width:100%; padding:12px; border-radius:4px; border:none; cursor:pointer">Details</button>
+                        <button style="width:50px; background:var(--glass); border:1px solid var(--glass-border); color:white; cursor:pointer">📞</button>
+                    </div>
+                </div>
+            </div>
+            <!-- Car 3 -->
+            <div class="car-card reveal" style="transition-delay: 0.2s;">
+                <div class="car-img-box">
+                    <img src="https://images.unsplash.com/photo-1614162692292-7ac56d7f7f1e?auto=format&fit=crop&q=80&w=600" alt="Audi">
+                </div>
+                <div class="car-info">
+                    <p style="font-size:0.7rem; color:var(--racing-red); font-weight:800">AUDI</p>
+                    <h3 class="nitro">e-tron GT</h3>
+                    <div class="car-specs">
+                        <span>Electric</span>
+                        <span>Range: 480km</span>
+                    </div>
+                    <div class="car-price">₹1.70 Cr</div>
+                    <div style="display:flex; gap:10px;">
+                        <button class="btn-red" style="width:100%; padding:12px; border-radius:4px; border:none; cursor:pointer">Details</button>
+                        <button style="width:50px; background:var(--glass); border:1px solid var(--glass-border); color:white; cursor:pointer">📞</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- EMI CALCULATOR -->
+    <section id="finance">
+        <div class="finance-container reveal">
+            <div>
+                <h2 style="font-size: 2.5rem; margin-bottom: 20px;">Luxury <span style="color:var(--racing-red)">Finance</span></h2>
+                <p style="opacity: 0.7; margin-bottom: 40px;">Tailored financial solutions for your next masterpiece. Calculate your monthly investment here.</p>
+                
+                <div class="input-group">
+                    <label style="font-size:0.8rem; font-weight:800">LOAN AMOUNT: ₹ <span id="amt-val">50,00,000</span></label>
+                    <input type="range" class="range-slider" min="1000000" max="50000000" step="100000" value="5000000" id="loanAmt">
+                </div>
+                <div class="input-group">
+                    <label style="font-size:0.8rem; font-weight:800">TENURE: <span id="ten-val">5</span> YEARS</label>
+                    <input type="range" class="range-slider" min="1" max="7" value="5" id="tenure">
+                </div>
+            </div>
+            <div class="emi-display">
+                <p class="nitro" style="font-size: 0.8rem; letter-spacing: 2px;">Estimated Monthly EMI</p>
+                <h2 style="font-size: 4rem; color: var(--racing-red); margin: 20px 0;">₹ <span id="emi-result">94,356</span></h2>
+                <button class="btn btn-outline" style="margin:0; width:100%">Check Eligibility</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- CONTACT FORM -->
+    <section id="contact">
+        <div class="listing-grid">
+            <div class="reveal">
+                <h2 style="font-size: 2.5rem; margin-bottom: 20px;">Book A <span style="color:var(--racing-red)">Test Drive</span></h2>
+                <p>Feel the power, the precision, and the luxury. Schedule your private viewing at our flagship showroom.</p>
+                <div style="margin-top: 40px;">
+                    <p>📍 Sector 45, Gurugram, India</p>
+                    <p>📞 +91 9999 888 777</p>
+                    <p>✉️ elite@aswebsolutions.com</p>
+                </div>
+            </div>
+            <div class="car-card reveal" style="padding: 40px;">
+                <input type="text" placeholder="Full Name" style="width:100%; padding:15px; background:var(--glass); border:1px solid var(--glass-border); color:white; margin-bottom:15px;">
+                <input type="tel" placeholder="Phone Number" style="width:100%; padding:15px; background:var(--glass); border:1px solid var(--glass-border); color:white; margin-bottom:15px;">
+                <select style="width:100%; padding:15px; background:var(--glass); border:1px solid var(--glass-border); color:white; margin-bottom:15px;">
+                    <option>Select Model</option>
+                    <option>Porsche 911</option>
+                    <option>BMW M5</option>
+                </select>
+                <button class="btn btn-red" style="width:100%">Confirm Appointment</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer>
+        <div class="footer-grid">
+            <div>
+                <div class="logo nitro" style="margin-bottom:20px;">AS <span style="color:var(--racing-red)">AUTO</span></div>
+                <p style="opacity:0.6; font-size:0.9rem;">India's leading luxury automobile dealership. We provide an end-to-end premium experience for connoisseurs of fine engineering.</p>
+            </div>
+            <div class="footer-links">
+                <h4 class="nitro" style="margin-bottom:20px; color:var(--racing-red)">Inventory</h4>
+                <ul><li>Luxury Sedans</li><li>Sports Cars</li><li>Performance SUVs</li><li>Electric</li></ul>
+            </div>
+            <div class="footer-links">
+                <h4 class="nitro" style="margin-bottom:20px; color:var(--racing-red)">Support</h4>
+                <ul><li>Finance Support</li><li>Insurance</li><li>Service Booking</li><li>Trade-in</li></ul>
+            </div>
+            <div class="footer-links">
+                <h4 class="nitro" style="margin-bottom:20px; color:var(--racing-red)">Follow Us</h4>
+                <p style="font-size:0.8rem; opacity:0.6">Instagram | LinkedIn | YouTube</p>
+            </div>
+        </div>
+        <p style="text-align:center; margin-top:60px; font-size:0.7rem; opacity:0.4">© 2026 AS WEB SOLUTIONS. ALL RIGHTS RESERVED.</p>
+    </footer>
+
+    <a href="#" class="wa-btn">
+        <svg fill="white" width="30" height="30" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.438 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884 0 2.225.584 3.914 1.574 5.611l-.973 3.548 3.888-.96zm11.367-7.157c-.301-.15-.1-.417-.666-.334-.179-.247-.526-.349-.783-.417-.257-.067-2.106-.883-2.106-.883-.301-.151-.518-.227-.718.075s-.769.979-.944 1.18-.351.226-.651.075-1.272-.469-2.423-1.494c-.895-.797-1.498-1.784-1.674-2.085s-.019-.465.131-.614c.135-.133.301-.351.451-.526.149-.174.199-.299.299-.499s.05-.375-.025-.526c-.075-.151-.718-1.73-.997-2.404-.265-.64-.533-.55-.718-.55h-.614c-.201 0-.527.075-.802.375s-1.053 1.028-1.053 2.507c0 1.479 1.078 2.909 1.228 3.109s2.122 3.239 5.138 4.542c.717.311 1.277.496 1.714.635.722.23 1.378.197 1.897.12.579-.086 1.781-.727 2.032-1.429.251-.702.251-1.305.176-1.43z"/></svg>
+    </a>
+
+    <script>
+        // --- CUSTOM CURSOR ---
+        const cursor = document.getElementById('cursor');
+        const glow = document.getElementById('cursor-glow');
+        document.addEventListener('mousemove', (e) => {
+            cursor.style.left = e.clientX + 'px';
+            cursor.style.top = e.clientY + 'px';
+            glow.style.left = e.clientX - 15 + 'px';
+            glow.style.top = e.clientY - 15 + 'px';
+        });
+
+        // --- LOADER ---
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                document.getElementById('loader').style.opacity = '0';
+                setTimeout(() => {
+                    document.getElementById('loader').style.display = 'none';
+                }, 500);
+            }, 2500);
+        });
+
+        // --- NAVBAR SCROLL ---
+        window.addEventListener('scroll', () => {
+            const nav = document.getElementById('navbar');
+            if (window.scrollY > 50) nav.classList.add('scrolled');
+            else nav.classList.remove('scrolled');
+
+            // --- REVEAL ANIMATION ---
+            const reveals = document.querySelectorAll('.reveal');
+            reveals.forEach(el => {
+                const windowHeight = window.innerHeight;
+                const revealTop = el.getBoundingClientRect().top;
+                if (revealTop < windowHeight - 100) el.classList.add('active');
+            });
+        });
+
+        // --- THEME TOGGLE ---
+        function toggleTheme() {
+            const html = document.documentElement;
+            const current = html.getAttribute('data-theme');
+            html.setAttribute('data-theme', current === 'dark' ? 'light' : 'dark');
+        }
+
+        // --- EMI CALCULATOR ---
+        const amtInput = document.getElementById('loanAmt');
+        const tenInput = document.getElementById('tenure');
+        
+        function calculateEMI() {
+            const P = parseInt(amtInput.value);
+            const R = 8.5 / 12 / 100; // Fixed interest rate 8.5%
+            const N = parseInt(tenInput.value) * 12;
+            
+            const emi = (P * R * Math.pow(1 + R, N)) / (Math.pow(1 + R, N) - 1);
+            
+            document.getElementById('amt-val').innerText = P.toLocaleString('en-IN');
+            document.getElementById('ten-val').innerText = tenInput.value;
+            document.getElementById('emi-result').innerText = Math.round(emi).toLocaleString('en-IN');
+        }
+
+        amtInput.addEventListener('input', calculateEMI);
+        tenInput.addEventListener('input', calculateEMI);
+    </script>
+</body>
+</html>
